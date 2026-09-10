@@ -2,51 +2,98 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: 'Inter', sans-serif;
+html {
+    background: #f7f7f8;
 }
 
-/* Custom scrollbar for data tables */
+html.dark {
+    background: #1e1f22;
+    color-scheme: dark;
+}
+
+body {
+    font-family: "Inter", sans-serif;
+    background: #f7f7f8;
+}
+
+html.dark body {
+    background: #1e1f22;
+}
+
+::selection {
+    background: rgba(229, 72, 77, 0.28);
+}
+
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+    width: 8px;
+    height: 8px;
 }
+
 ::-webkit-scrollbar-track {
-  background: transparent;
+    background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
+    background: #b5bac1;
+    border-radius: 9999px;
 }
-.dark ::-webkit-scrollbar-thumb {
-  background: #334155;
-}
+
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+    background: #949ba4;
 }
+
+.dark ::-webkit-scrollbar-thumb {
+    background: #3f4147;
+}
+
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+    background: #4e5058;
+}
+
+.custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #b5bac1 transparent;
+}
+
+.dark .custom-scrollbar {
+    scrollbar-color: #3f4147 transparent;
+}
+
+input,
+textarea,
+select,
+button {
+    accent-color: #e5484d;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: 0.6;
+    cursor: pointer;
+}
+
+.dark input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.65;
 }
 
 @media print {
-  header,
-  aside,
-  .action-bar,
-  .no-print {
-    display: none !important;
-  }
-  main {
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: visible !important;
-  }
-  body {
-    background: white !important;
-    color: black !important;
-  }
-  .dark {
-    color: black !important;
-    background: white !important;
-  }
+    header,
+    aside,
+    .action-bar,
+    .no-print {
+        display: none !important;
+    }
+
+    html,
+    body {
+        background: white !important;
+        color: black !important;
+        overflow: visible !important;
+    }
+
+    main {
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+    }
 }

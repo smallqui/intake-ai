@@ -1,234 +1,758 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
-import { FileText, FileBox, FileCheck, History, BarChart2, TestTube, Download, TrendingUp, Globe2, Coins, AlertTriangle, PieChart } from 'lucide-react';
-import { getExchangeRate, getCurrencyCode, CODE_TO_SYMBOL } from '../lib/currency';
+import React, { useMemo, useState } from "react";
+import { FileText, FileBox, FileCheck, History, BarChart2, TestTube, Download, TrendingUp, Globe2, Coins, AlertTriangle, PieChart } from "lucide-react";
+import { getExchangeRate, getCurrencyCode } from "../lib/currency";
 
-const AnalyticsBar = ({ title, icon: Icon, segments, warning }) => {
-  if (!segments || segments.length === 0) return null;
+/**
+ * Renders a proportional analytics bar and its supporting legend.
+ *
+ * @param {Object} props
+ * @param {string} props.title - Section heading.
+ * @param {React.ComponentType} props.icon - Lucide icon component.
+ * @param {Array} props.segments - Analytics segments to visualize.
+ * @param {boolean} [props.warning=false] - Whether to display a warning state.
+ * @returns {JSX.Element|null}
+ */
+const AnalyticsBar = ({
+    title,
+    icon: Icon,
+    segments,
+    warning = false,
+}) => {
+    if (!segments || segments.length === 0) return null;
 
-  return (
-    <div className="pt-4 border-t border-slate-200 dark:border-white/5 first:border-0 first:pt-0">
-      <div className="flex items-center space-x-2 mb-3">
-         <Icon className={`w-3.5 h-3.5 ${warning ? 'text-amber-500' : 'text-slate-500'}`} />
-         <h4 className={`text-[10px] font-bold uppercase tracking-widest ${warning ? 'text-amber-600 dark:text-amber-500' : 'text-slate-500'}`}>{title}</h4>
-      </div>
-      {/* Use flex to distribute width based on value, ensuring 100% fill without gaps */}
-      <div className="w-full h-4 rounded-full flex overflow-hidden shadow-inner ring-1 ring-black/5 dark:ring-white/5 bg-slate-100 dark:bg-slate-800">
-        {segments.map((s, i) => (
-          <div 
-            key={i}
-            className="h-full relative group transition-all duration-1000 ease-out border-r last:border-0 border-white/10"
-            style={{ flex: s.value, backgroundColor: s.color }}
-            title={`${s.label}: ${s.subtext || s.value}`}
-          />
-        ))}
-      </div>
-      <div className="mt-2.5 grid grid-cols-1 gap-1.5">
-        {segments.map((s, i) => (
-          <div key={i} className="flex items-center justify-between text-[10px]">
-            <div className="flex items-center min-w-0">
-              <div className="w-2 h-2 rounded-full mr-2 shrink-0" style={{ backgroundColor: s.color }} />
-              <span className="text-slate-700 dark:text-slate-300 font-bold truncate mr-1">{s.label}</span>
+    return (
+        <div className="pt-4 border-t border-[#d8d9dc] dark:border-[#3f4147] first:border-0 first:pt-0">
+            <div className="flex items-center space-x-2 mb-3">
+                <Icon
+                    className={`w-3.5 h-3.5 ${
+                        warning
+                            ? "text-[#f59e0b]"
+                            : "text-[#6d6f78] dark:text-[#949ba4]"
+                    }`}
+                />
+
+                <h4
+                    className={`text-[10px] font-bold uppercase tracking-widest ${
+                        warning
+                            ? "text-[#b45309] dark:text-[#fbbf24]"
+                            : "text-[#6d6f78] dark:text-[#949ba4]"
+                    }`}
+                >
+                    {title}
+                </h4>
             </div>
-            <span className="font-mono text-slate-400 ml-2 shrink-0">{s.subtext || `${Math.round(s.percentage)}%`}</span>
-          </div>
-        ))}
-      </div>
-      {warning && (
-          <div className="mt-3 p-2 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-md flex items-center space-x-2 animate-pulse">
-              <AlertTriangle className="w-3 h-3 text-amber-500" />
-              <span className="text-[9px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wide">Red Flag: No supporting docs</span>
-          </div>
-      )}
-    </div>
-  );
+
+            <div className="w-full h-4 rounded-full flex overflow-hidden shadow-inner ring-1 ring-black/5 dark:ring-white/5 bg-[#efeff1] dark:bg-[#1e1f22]">
+                {segments.map((segment, index) => (
+                    <div
+                        key={index}
+                        className="h-full relative group transition-all duration-1000 ease-out border-r last:border-0 border-white/10"
+                        style={{
+                            flex: segment.value,
+                            backgroundColor: segment.color,
+                        }}
+                        title={`${segment.label}: ${
+                            segment.subtext || segment.value
+                        }`}
+                    />
+                ))}
+            </div>
+
+            <div className="mt-2.5 grid grid-cols-1 gap-1.5">
+                {segments.map((segment, index) => (
+                    <div
+                        key={index}
+                        className="flex items-center justify-between text-[10px]"
+                    >
+                        <div className="flex items-center min-w-0">
+                            <div
+                                className="w-2 h-2 rounded-full mr-2 shrink-0"
+                                style={{
+                                    backgroundColor: segment.color,
+                                }}
+                            />
+
+                            <span className="text-[#4e5058] dark:text-[#dbdee1] font-bold truncate mr-1">
+                                {segment.label}
+                            </span>
+                        </div>
+
+                        <span className="font-mono text-[#949ba4] ml-2 shrink-0">
+                            {segment.subtext ||
+                                `${Math.round(segment.percentage)}%`}
+                        </span>
+                    </div>
+                ))}
+            </div>
+
+            {warning && (
+                <div className="mt-3 p-2 bg-[#fffbeb] dark:bg-[#f59e0b]/10 border border-[#fde68a] dark:border-[#f59e0b]/30 rounded-md flex items-center space-x-2">
+                    <AlertTriangle className="w-3 h-3 text-[#f59e0b]" />
+
+                    <span className="text-[9px] font-bold text-[#92400e] dark:text-[#fbbf24] uppercase tracking-wide">
+                        Red Flag: No supporting docs
+                    </span>
+                </div>
+            )}
+        </div>
+    );
 };
 
+/**
+ * Displays processed document history and session analytics.
+ *
+ * The sidebar provides:
+ * - A history view for selecting previously processed documents.
+ * - An analytics view summarizing document value, processing time,
+ *   spending categories, currencies, document types, and source languages.
+ * - Demo mode controls.
+ * - Combined session export and session clearing controls.
+ *
+ * @param {Object} props
+ * @param {Array} props.history - Documents processed during the session.
+ * @param {string|null} props.currentId - ID of the active document.
+ * @param {Function} props.onSelect - Selects a document from history.
+ * @param {Function} props.onNewInvoice - Starts a new invoice workflow.
+ * @param {Function} props.onExportAll - Exports all session documents.
+ * @param {Object} props.t - Active interface translations.
+ * @param {boolean} props.isDemoMode - Whether demo mode is enabled.
+ * @param {Function} props.onToggleDemoMode - Toggles demo mode.
+ * @param {string} props.exportFormat - Active export format.
+ * @param {Function} props.onExportFormatChange - Changes export format.
+ * @param {Function} props.onClearAll - Clears session data.
+ * @returns {JSX.Element}
+ */
 export const SessionSidebar = ({
-  history, currentId, onSelect, onNewInvoice, onExportAll, t, isDemoMode, onToggleDemoMode, exportFormat = 'csv', onExportFormatChange, onClearAll
+    history,
+    currentId,
+    onSelect,
+    onNewInvoice,
+    onExportAll,
+    t,
+    isDemoMode,
+    onToggleDemoMode,
+    exportFormat = "csv",
+    onExportFormatChange,
+    onClearAll,
 }) => {
-  const [activeTab, setActiveTab] = useState<Tab>('list');
+    const [activeTab, setActiveTab] = useState("list");
 
-  const getBadgeStyle = (type = '') => { 
-    const tStr = type.toUpperCase(); 
-    if (tStr.includes('INVOICE')) return { className: 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20', icon: FileText, label: 'INV' }; 
-    if (tStr.includes('PACKING')) return { className: 'text-orange-600 dark:text-orange-400 bg-orange-500/10 border-orange-500/20', icon: FileBox, label: 'PAK' }; 
-    if (tStr.includes('BOL') || tStr.includes('LADING')) return { className: 'text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/20', icon: FileCheck, label: 'BOL' }; 
-    return { className: 'text-slate-600 dark:text-slate-400 bg-slate-500/10 border-slate-500/20', icon: FileText, label: 'DOC' }; 
-  };
-  
-  const calculateRisk = (data: InvoiceData) => { 
-    const date = new Date(data.invoiceDate); 
-    const twoYearsAgo = new Date(); 
-    twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2); 
-    return (!isNaN(date.getTime()) && date < twoYearsAgo); 
-  };
+    /**
+     * Returns visual metadata for supported document types.
+     *
+     * @param {string} type - Extracted document type.
+     * @returns {{className: string, icon: React.ComponentType, label: string}}
+     */
+    const getBadgeStyle = (type = "") => {
+        const normalizedType = type.toUpperCase();
 
-  const stats = useMemo(() => {
-    if (history.length === 0) return null;
-    
-    let totalValueUSD = 0; 
-    let totalTime = 0; 
-    
-    const catCounts: Record<string, number> = {};
-    const currencyCounts: Record<string, number> = {};
-    const langCounts: Record<string, number> = {};
-    const typeCounts: Record<string, number> = { 'Invoice': 0, 'Receipt': 0, 'PO': 0, 'Other': 0 };
-
-    history.forEach(doc => {
-      const { rate } = getExchangeRate(doc.currencySymbol, 'USD');
-      totalValueUSD += (doc.totalAmount || 0) * rate;
-      if (doc.processingTimeMs) totalTime += doc.processingTimeMs;
-      
-      doc.lineItems.forEach(item => { 
-          const cat = item.glCategory || 'Uncategorized'; 
-          catCounts[cat] = (catCounts[cat] || 0) + 1; 
-      });
-
-      const currCode = getCurrencyCode(doc.currencySymbol);
-      currencyCounts[currCode] = (currencyCounts[currCode] || 0) + 1;
-
-      let lang = doc.detectedLanguage || 'English'; 
-      const vName = (doc.vendorName || '').toLowerCase();
-      if (vName.includes('mustermann') || vName.includes('gmbh') || (doc.currencySymbol === '€' && lang === 'English')) {
-          lang = 'German';
-      } else if (/[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f]/.test(doc.vendorName || '')) {
-          lang = 'Japanese';
-      } else if (doc.currencySymbol === '¥' && !lang) {
-          lang = 'Japanese';
-      }
-      langCounts[lang] = (langCounts[lang] || 0) + 1;
-
-      // Type Counting
-      const dType = (doc.documentType || '').toUpperCase();
-      if (dType.includes('INVOICE')) typeCounts['Invoice']++;
-      else if (dType.includes('RECEIPT')) typeCounts['Receipt']++;
-      else if (dType.includes('PURCHASE') || dType.includes('PO')) typeCounts['PO']++;
-      else typeCounts['Other']++;
-    });
-    
-    const totalItems = Object.values(catCounts).reduce((a, b) => a + b, 0);
-    const sortedCats = Object.entries(catCounts).sort(([, a], [, b]) => b - a);
-    
-    // Updated logic: Show all categories with cycling colors to avoid 'Other' placeholder
-    const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ec4899', '#3b82f6', '#8b5cf6', '#06b6d4', '#f43f5e', '#84cc16', '#14b8a6'];
-    const expenseSegments: BarSegment[] = totalItems > 0 ? sortedCats.map(([label, value], i) => ({ 
-      label, value, percentage: (value / totalItems) * 100,
-      color: COLORS[i % COLORS.length],
-      subtext: `${value} items`
-    })) : [];
-
-    const totalDocs = history.length;
-    const currencySegments: BarSegment[] = Object.entries(currencyCounts).sort(([, a], [, b]) => b - a).map(([code, count]) => {
-        let color = '#64748b';
-        if (code === 'JPY') color = '#06b6d4'; 
-        if (code === 'USD') color = '#10b981';
-        if (code === 'EUR') color = '#3b82f6'; 
-        if (code === 'GBP') color = '#8b5cf6';
-        return { label: code, value: count, percentage: (count / totalDocs) * 100, color, subtext: `${count} doc(s)` };
-    });
-
-    const languageSegments: BarSegment[] = Object.entries(langCounts).sort(([, a], [, b]) => b - a).map(([lang, count]) => {
-        let color = '#64748b';
-        if (lang === 'Japanese') color = '#f97316';
-        else if (lang === 'German') color = '#0f172a';
-        else if (lang === 'English') color = '#8b5cf6';
-        return { label: lang, value: count, percentage: (count / totalDocs) * 100, color, subtext: `${lang === 'English' ? 95 : 99}% Conf.` };
-    });
-
-    // DOC COMPOSITION DATA -> Converted to BarSegment[] for AnalyticsBar
-    const showRedFlag = typeCounts['Invoice'] === totalDocs && totalDocs > 1;
-    const docCompSegments: BarSegment[] = [
-        { label: 'Invoice', value: typeCounts['Invoice'], color: '#4f46e5' }, // Indigo
-        { label: 'Receipt', value: typeCounts['Receipt'], color: '#10b981' }, // Emerald
-        { label: 'PO', value: typeCounts['PO'], color: '#f59e0b' },      // Amber
-        { label: 'Other', value: typeCounts['Other'], color: '#94a3b8' }      // Slate
-    ]
-    .filter(s => s.value > 0)
-    .sort((a, b) => b.value - a.value)
-    .map(s => {
-        // Warning override for Invoices
-        if (s.label === 'Invoice' && showRedFlag) {
-            s.color = '#f59e0b'; // Warn color
+        if (normalizedType.includes("INVOICE")){
+            return {
+                className:
+                    "text-[#047857] dark:text-[#6ee7b7] bg-[#10b981]/10 border-[#10b981]/25",
+                icon: FileText,
+                label: "INV",
+            };
         }
+
+        if (normalizedType.includes("PACKING")){
+            return {
+                className:
+                    "text-[#c2410c] dark:text-[#fb923c] bg-[#f97316]/10 border-[#f97316]/25",
+                icon: FileBox,
+                label: "PAK",
+            };
+        }
+
+        if (
+            normalizedType.includes("BOL") ||
+            normalizedType.includes("LADING")
+        ){
+            return {
+                className:
+                    "text-[#d13f44] dark:text-[#f77479] bg-[#e5484d]/10 border-[#e5484d]/25",
+                icon: FileCheck,
+                label: "BOL",
+            };
+        }
+
         return {
-            ...s,
-            percentage: (s.value / totalDocs) * 100,
-            subtext: `${s.value} docs`
+            className:
+                "text-[#6d6f78] dark:text-[#b5bac1] bg-[#6d6f78]/10 border-[#6d6f78]/25",
+            icon: FileText,
+            label: "DOC",
         };
-    });
+    };
 
-    return { totalDocs, totalValueUSD, avgTime: totalTime / totalDocs / 1000, expenseSegments, currencySegments, languageSegments, docCompSegments, showRedFlag };
-  }, [history]);
+    /**
+     * Determines whether a document is older than two years.
+     *
+     * @param {Object} data - Document data.
+     * @returns {boolean}
+     */
+    const calculateRisk = (data) => {
+        const date = new Date(data.invoiceDate);
+        const twoYearsAgo = new Date();
 
-  return (
-    <div className="h-full flex flex-col bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border-r border-slate-200 dark:border-white/5 w-full">
-      <div className="p-4 border-b border-slate-200 dark:border-white/5">
-        <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg gap-2 mb-4">
-          <button onClick={() => setActiveTab('list')} className={`flex-1 flex items-center justify-center space-x-2 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${activeTab === 'list' ? 'bg-white dark:bg-slate-700 shadow-sm text-indigo-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}><History className="w-3 h-3" /><span>{t.sessionTrail}</span></button>
-          <button onClick={() => setActiveTab('stats')} className={`flex-1 flex items-center justify-center space-x-2 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${activeTab === 'stats' ? 'bg-white dark:bg-slate-700 shadow-sm text-indigo-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}><BarChart2 className="w-3 h-3" /><span>{t.sessionStats}</span></button>
-        </div>
-        <div onClick={onToggleDemoMode} className={`w-full p-2.5 rounded-lg border flex items-center justify-between cursor-pointer transition-all duration-300 shadow-sm group ${isDemoMode ? 'bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/30 ring-1 ring-amber-500/20' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-indigo-300'}`}>
-          <div className="flex items-center space-x-2"><div className={`p-1 rounded transition-colors ${isDemoMode ? 'bg-amber-100 text-amber-600' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'}`}><TestTube className="w-3 h-3" /></div><span className={`text-[10px] font-bold uppercase tracking-wider ${isDemoMode ? 'text-amber-700' : 'text-slate-600'}`}>{isDemoMode ? 'Demo Mode' : 'Real API'}</span></div>
-          <div className={`w-8 h-4 rounded-full relative transition-colors ${isDemoMode ? 'bg-amber-500' : 'bg-slate-300'}`}><div className={`absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-transform ${isDemoMode ? 'translate-x-4' : 'translate-x-0'}`} /></div>
-        </div>
-      </div>
+        twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
-        {activeTab === 'list' && (
-          <div className="p-4 space-y-3">
-            {history.length === 0 && <div className="text-center py-10 opacity-50"><p className="text-xs text-slate-500">{t.noDocs}</p></div>}
-            {history.map((item) => (
-              <div key={item.id} onClick={() => onSelect(item)} className={`group relative p-3 rounded-xl border transition-all cursor-pointer ${item.id === currentId ? 'bg-white dark:bg-slate-800 border-indigo-500/50 shadow-lg' : 'bg-white/40 dark:bg-slate-800/40 hover:bg-white/80'}`}>
-                <div className="flex justify-between items-start mb-2">
-                  <div className={`flex items-center space-x-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase border ${getBadgeStyle(item.documentType).className}`}><FileText className="w-3 h-3" /><span>{getBadgeStyle(item.documentType).label}</span></div>
-                  {calculateRisk(item) && <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>}
+        return !isNaN(date.getTime()) && date < twoYearsAgo;
+    };
+
+    /**
+     * Aggregates document history into analytics used by the dashboard.
+     */
+    const stats = useMemo(() => {
+        if (history.length === 0) return null;
+
+        let totalValueUSD = 0;
+        let totalTime = 0;
+
+        const categoryCounts = {};
+        const currencyCounts = {};
+        const languageCounts = {};
+        const typeCounts = {
+            Invoice: 0,
+            Receipt: 0,
+            PO: 0,
+            Other: 0,
+        };
+
+        history.forEach((doc) => {
+            const { rate } = getExchangeRate(
+                doc.currencySymbol,
+                "USD",
+            );
+
+            totalValueUSD +=
+                (doc.totalAmount || 0) * rate;
+
+            if (doc.processingTimeMs){
+                totalTime += doc.processingTimeMs;
+            }
+
+            doc.lineItems.forEach((item) => {
+                const category =
+                    item.glCategory || "Uncategorized";
+
+                categoryCounts[category] =
+                    (categoryCounts[category] || 0) + 1;
+            });
+
+            const currencyCode = getCurrencyCode(
+                doc.currencySymbol,
+            );
+
+            currencyCounts[currencyCode] =
+                (currencyCounts[currencyCode] || 0) + 1;
+
+            let language =
+                doc.detectedLanguage || "English";
+
+            const vendorName = (
+                doc.vendorName || ""
+            ).toLowerCase();
+
+            if (
+                vendorName.includes("mustermann") ||
+                vendorName.includes("gmbh") ||
+                (doc.currencySymbol === "€" &&
+                    language === "English")
+            ){
+                language = "German";
+            } 
+            else if (
+                /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f]/.test(
+                    doc.vendorName || "",
+                )
+            ){
+                language = "Japanese";
+            } 
+            else if (
+                doc.currencySymbol === "¥" &&
+                !language
+            ){
+                language = "Japanese";
+            }
+
+            languageCounts[language] =
+                (languageCounts[language] || 0) + 1;
+
+            const documentType = (
+                doc.documentType || ""
+            ).toUpperCase();
+
+            if (documentType.includes("INVOICE")){
+                typeCounts.Invoice++;
+            } 
+            else if (
+                documentType.includes("RECEIPT")
+            ){
+                typeCounts.Receipt++;
+            } 
+            else if (
+                documentType.includes("PURCHASE") ||
+                documentType.includes("PO")
+            ){
+                typeCounts.PO++;
+            } 
+            else {
+                typeCounts.Other++;
+            }
+        });
+
+        const totalItems = Object.values(
+            categoryCounts,
+        ).reduce((sum, value) => sum + value, 0);
+
+        const sortedCategories = Object.entries(
+            categoryCounts,
+        ).sort(([, a], [, b]) => b - a);
+
+        /*
+         * Warm accent colors keep analytics segments distinguishable
+         * without reintroducing the old blue/purple application palette.
+         */
+        const ANALYTICS_COLORS = [
+            "#e5484d",
+            "#f77479",
+            "#d13f44",
+            "#f97316",
+            "#f59e0b",
+            "#b5bac1",
+            "#6d6f78",
+            "#10b981",
+            "#922e32",
+            "#4e5058",
+        ];
+
+        const expenseSegments =
+            totalItems > 0
+                ? sortedCategories.map(
+                      ([label, value], index) => ({
+                          label,
+                          value,
+                          percentage:
+                              (value / totalItems) * 100,
+                          color: ANALYTICS_COLORS[
+                              index %
+                                  ANALYTICS_COLORS.length
+                          ],
+                          subtext: `${value} items`,
+                      }),
+                  )
+                : [];
+
+        const totalDocs = history.length;
+
+        const currencySegments = Object.entries(
+            currencyCounts,
+        )
+            .sort(([, a], [, b]) => b - a)
+            .map(([code, count]) => {
+                let color = "#6d6f78";
+
+                if (code === "USD"){
+                    color = "#10b981";
+                } 
+                else if (code === "EUR"){
+                    color = "#e5484d";
+                } 
+                else if (code === "GBP"){
+                    color = "#f77479";
+                } 
+                else if (code === "JPY"){
+                    color = "#f59e0b";
+                }
+
+                return {
+                    label: code,
+                    value: count,
+                    percentage:
+                        (count / totalDocs) * 100,
+                    color,
+                    subtext: `${count} doc(s)`,
+                };
+            });
+
+        const languageSegments = Object.entries(
+            languageCounts,
+        )
+            .sort(([, a], [, b]) => b - a)
+            .map(([language, count], index) => ({
+                label: language,
+                value: count,
+                percentage:
+                    (count / totalDocs) * 100,
+                color:
+                    ANALYTICS_COLORS[
+                        index % ANALYTICS_COLORS.length
+                    ],
+                subtext: `${
+                    language === "English" ? 95 : 99
+                }% Conf.`,
+            }));
+
+        const showRedFlag =
+            typeCounts.Invoice === totalDocs &&
+            totalDocs > 1;
+
+        const docCompSegments = [
+            {
+                label: "Invoice",
+                value: typeCounts.Invoice,
+                color: "#e5484d",
+            },
+            {
+                label: "Receipt",
+                value: typeCounts.Receipt,
+                color: "#10b981",
+            },
+            {
+                label: "PO",
+                value: typeCounts.PO,
+                color: "#f59e0b",
+            },
+            {
+                label: "Other",
+                value: typeCounts.Other,
+                color: "#949ba4",
+            },
+        ]
+            .filter((segment) => segment.value > 0)
+            .sort((a, b) => b.value - a.value)
+            .map((segment) => ({
+                ...segment,
+                color:
+                    segment.label === "Invoice" &&
+                    showRedFlag
+                        ? "#f59e0b"
+                        : segment.color,
+                percentage:
+                    (segment.value / totalDocs) * 100,
+                subtext: `${segment.value} docs`,
+            }));
+
+        return {
+            totalDocs,
+            totalValueUSD,
+            avgTime: totalTime / totalDocs / 1000,
+            expenseSegments,
+            currencySegments,
+            languageSegments,
+            docCompSegments,
+            showRedFlag,
+        };
+    }, [history]);
+
+    return (
+        <div className="h-full flex flex-col bg-[#f7f7f8]/80 dark:bg-[#2b2d31] backdrop-blur-xl border-r border-[#d8d9dc] dark:border-[#3f4147] w-full">
+            <div className="p-4 border-b border-[#d8d9dc] dark:border-[#3f4147]">
+                <div className="flex bg-[#efeff1] dark:bg-[#1e1f22] p-1 rounded-lg gap-1 mb-4">
+                    <button
+                        onClick={() =>
+                            setActiveTab("list")
+                        }
+                        className={`flex-1 flex items-center justify-center space-x-2 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${
+                            activeTab === "list"
+                                ? "bg-white dark:bg-[#313338] shadow-sm text-[#e5484d]"
+                                : "text-[#6d6f78] dark:text-[#949ba4] hover:text-[#313338] dark:hover:text-[#dbdee1]"
+                        }`}
+                    >
+                        <History className="w-3 h-3" />
+                        <span>{t.sessionHistory}</span>
+                    </button>
+
+                    <button
+                        onClick={() =>
+                            setActiveTab("stats")
+                        }
+                        className={`flex-1 flex items-center justify-center space-x-2 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${
+                            activeTab === "stats"
+                                ? "bg-white dark:bg-[#313338] shadow-sm text-[#e5484d]"
+                                : "text-[#6d6f78] dark:text-[#949ba4] hover:text-[#313338] dark:hover:text-[#dbdee1]"
+                        }`}
+                    >
+                        <BarChart2 className="w-3 h-3" />
+                        <span>
+                            {t.sessionAnalytics}
+                        </span>
+                    </button>
                 </div>
-                <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate pr-4" title={item.vendorName}>{item.vendorName || 'Unknown'}</h4>
-                <p className="text-xs font-mono text-slate-500">{item.currencySymbol}{item.totalAmount?.toFixed(2)}</p>
-              </div>
-            ))}
-          </div>
-        )}
 
-        {activeTab === 'stats' && stats && (
-          <div className="p-4 space-y-6">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-white/40 dark:bg-slate-800/40 p-2.5 rounded-xl border border-slate-200 dark:border-white/5" title={t.totalDocs}>
-                <p className="text-[9px] uppercase font-bold text-slate-400 truncate">{t.totalDocs}</p>
-                <p className="text-lg font-bold text-slate-800 dark:text-white leading-tight">{stats.totalDocs}</p>
-              </div>
-              <div className="bg-white/40 dark:bg-slate-800/40 p-2.5 rounded-xl border border-slate-200 dark:border-white/5" title={t.avgTime}>
-                <p className="text-[9px] uppercase font-bold text-slate-400 truncate">{t.avgTime}</p>
-                <p className="text-lg font-bold text-slate-800 dark:text-white leading-tight">{stats.avgTime.toFixed(1)}<span className="text-[10px] ml-0.5 font-normal text-slate-500">{t.seconds}</span></p>
-              </div>
-            </div>
-            <div className="bg-gradient-to-br from-indigo-500/10 to-blue-500/10 p-3 rounded-xl border border-indigo-500/20" title={t.totalValue}>
-              <p className="text-[9px] uppercase font-bold text-indigo-500/80 truncate">{t.totalValue}</p>
-              <p className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mt-0.5 truncate" title={`$${stats.totalValueUSD.toLocaleString()}`}>${stats.totalValueUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-            </div>
-            
-            <AnalyticsBar title={t.spendingBreakdown} icon={TrendingUp} segments={stats.expenseSegments} />
-            <AnalyticsBar title={t.currencyDist} icon={Coins} segments={stats.currencySegments} />
-            {/* UPDATED: Doc Composition as AnalyticsBar */}
-            <AnalyticsBar title={t.docComposition || "Doc Composition"} icon={PieChart} segments={stats.docCompSegments} warning={stats.showRedFlag} />
-            <AnalyticsBar title="Source Language" icon={Globe2} segments={stats.languageSegments} />
-          </div>
-        )}
-      </div>
+                <div
+                    onClick={onToggleDemoMode}
+                    className={`w-full p-2.5 rounded-lg border flex items-center justify-between cursor-pointer transition-all duration-300 shadow-sm group ${
+                        isDemoMode
+                            ? "bg-[#fffbeb] dark:bg-[#f59e0b]/10 border-[#fde68a] dark:border-[#f59e0b]/30 ring-1 ring-[#f59e0b]/20"
+                            : "bg-white dark:bg-[#313338] border-[#d8d9dc] dark:border-[#3f4147] hover:border-[#e5484d]/50"
+                    }`}
+                >
+                    <div className="flex items-center space-x-2">
+                        <div
+                            className={`p-1 rounded transition-colors ${
+                                isDemoMode
+                                    ? "bg-[#fef3c7] dark:bg-[#f59e0b]/20 text-[#b45309] dark:text-[#fbbf24]"
+                                    : "bg-[#efeff1] dark:bg-[#1e1f22] text-[#6d6f78] dark:text-[#b5bac1]"
+                            }`}
+                        >
+                            <TestTube className="w-3 h-3" />
+                        </div>
 
-      <div className="p-4 border-t border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-slate-800/50">
-        <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-2 block">Export Format</label>
-        <select value={exportFormat} onChange={(e) => onExportFormatChange && onExportFormatChange(e.target.value)} className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-indigo-500">
-          <option value="csv">Generic CSV</option>
-          <option value="quickbooks">QuickBooks (IIF)</option>
-          <option value="excel">Excel (.xls)</option>
-          <option value="json">JSON</option>
-        </select>
-        <button onClick={onExportAll} className="w-full mt-3 flex items-center justify-center space-x-2 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all"><Download className="w-3 h-3" /><span>Export Combined</span></button>
-        <button onClick={onClearAll} className="w-full mt-2 flex items-center justify-center space-x-2 py-2 border border-red-200 dark:border-red-900/30 rounded-lg text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all"><AlertTriangle className="w-3 h-3" /><span>{t.clearData}</span></button>
-      </div>
-    </div>
-  );
+                        <span
+                            className={`text-[10px] font-bold uppercase tracking-wider ${
+                                isDemoMode
+                                    ? "text-[#92400e] dark:text-[#fbbf24]"
+                                    : "text-[#4e5058] dark:text-[#b5bac1]"
+                            }`}
+                        >
+                            {isDemoMode
+                                ? "Demo Mode"
+                                : "Real API"}
+                        </span>
+                    </div>
+
+                    <div
+                        className={`w-8 h-4 rounded-full relative transition-colors ${
+                            isDemoMode
+                                ? "bg-[#f59e0b]"
+                                : "bg-[#b5bac1] dark:bg-[#4e5058]"
+                        }`}
+                    >
+                        <div
+                            className={`absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-transform ${
+                                isDemoMode
+                                    ? "translate-x-4"
+                                    : "translate-x-0"
+                            }`}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto custom-scrollbar">
+                {activeTab === "list" && (
+                    <div className="p-4 space-y-3">
+                        {history.length === 0 && (
+                            <div className="text-center py-10 opacity-60">
+                                <History className="w-5 h-5 mx-auto mb-2 text-[#949ba4]" />
+
+                                <p className="text-xs text-[#6d6f78] dark:text-[#949ba4]">
+                                    {t.noDocs}
+                                </p>
+                            </div>
+                        )}
+
+                        {history.map((item) => {
+                            const badge =
+                                getBadgeStyle(
+                                    item.documentType,
+                                );
+
+                            const BadgeIcon =
+                                badge.icon;
+
+                            return (
+                                <div
+                                    key={item.id}
+                                    onClick={() =>
+                                        onSelect(item)
+                                    }
+                                    className={`group relative p-3 rounded-xl border transition-all cursor-pointer ${
+                                        item.id === currentId
+                                            ? "bg-white dark:bg-[#313338] border-[#e5484d]/60 shadow-lg shadow-[#e5484d]/5"
+                                            : "bg-white/50 dark:bg-[#313338]/50 border-[#d8d9dc] dark:border-[#3f4147] hover:bg-white dark:hover:bg-[#313338] hover:border-[#e5484d]/30"
+                                    }`}
+                                >
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div
+                                            className={`flex items-center space-x-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase border ${badge.className}`}
+                                        >
+                                            <BadgeIcon className="w-3 h-3" />
+                                            <span>
+                                                {badge.label}
+                                            </span>
+                                        </div>
+
+                                        {calculateRisk(
+                                            item,
+                                        ) && (
+                                            <span
+                                                className="w-1.5 h-1.5 rounded-full bg-[#e5484d] animate-pulse"
+                                                title="Potential risk detected"
+                                            />
+                                        )}
+                                    </div>
+
+                                    <h4
+                                        className="text-sm font-semibold text-[#313338] dark:text-[#dbdee1] truncate pr-4"
+                                        title={
+                                            item.vendorName
+                                        }
+                                    >
+                                        {item.vendorName ||
+                                            "Unknown"}
+                                    </h4>
+
+                                    <p className="text-xs font-mono text-[#6d6f78] dark:text-[#949ba4]">
+                                        {
+                                            item.currencySymbol
+                                        }
+                                        {item.totalAmount?.toFixed(
+                                            2,
+                                        )}
+                                    </p>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {activeTab === "stats" && stats && (
+                    <div className="p-4 space-y-6">
+                        <div className="grid grid-cols-2 gap-3">
+                            <div
+                                className="bg-white/60 dark:bg-[#313338] p-2.5 rounded-xl border border-[#d8d9dc] dark:border-[#3f4147]"
+                                title={t.totalDocs}
+                            >
+                                <p className="text-[9px] uppercase font-bold text-[#949ba4] truncate">
+                                    {t.totalDocs}
+                                </p>
+
+                                <p className="text-lg font-bold text-[#313338] dark:text-[#f2f3f5] leading-tight">
+                                    {stats.totalDocs}
+                                </p>
+                            </div>
+
+                            <div
+                                className="bg-white/60 dark:bg-[#313338] p-2.5 rounded-xl border border-[#d8d9dc] dark:border-[#3f4147]"
+                                title={t.avgTime}
+                            >
+                                <p className="text-[9px] uppercase font-bold text-[#949ba4] truncate">
+                                    {t.avgTime}
+                                </p>
+
+                                <p className="text-lg font-bold text-[#313338] dark:text-[#f2f3f5] leading-tight">
+                                    {stats.avgTime.toFixed(
+                                        1,
+                                    )}
+
+                                    <span className="text-[10px] ml-0.5 font-normal text-[#6d6f78] dark:text-[#949ba4]">
+                                        {t.seconds}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div
+                            className="bg-[#e5484d]/10 p-3 rounded-xl border border-[#e5484d]/25"
+                            title={t.totalValue}
+                        >
+                            <p className="text-[9px] uppercase font-bold text-[#d13f44] dark:text-[#f77479] truncate">
+                                {t.totalValue}
+                            </p>
+
+                            <p
+                                className="text-xl font-bold text-[#d13f44] dark:text-[#f77479] mt-0.5 truncate"
+                                title={`$${stats.totalValueUSD.toLocaleString()}`}
+                            >
+                                $
+                                {stats.totalValueUSD.toLocaleString(
+                                    undefined,
+                                    {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                    },
+                                )}
+                            </p>
+                        </div>
+
+                        <AnalyticsBar
+                            title={t.spendingBreakdown}
+                            icon={TrendingUp}
+                            segments={
+                                stats.expenseSegments
+                            }
+                        />
+
+                        <AnalyticsBar
+                            title={t.currencyDist}
+                            icon={Coins}
+                            segments={
+                                stats.currencySegments
+                            }
+                        />
+
+                        <AnalyticsBar
+                            title={
+                                t.docComposition ||
+                                "Doc Composition"
+                            }
+                            icon={PieChart}
+                            segments={
+                                stats.docCompSegments
+                            }
+                            warning={stats.showRedFlag}
+                        />
+
+                        <AnalyticsBar
+                            title="Source Language"
+                            icon={Globe2}
+                            segments={
+                                stats.languageSegments
+                            }
+                        />
+                    </div>
+                )}
+            </div>
+
+            <div className="p-4 border-t border-[#d8d9dc] dark:border-[#3f4147] bg-[#efeff1] dark:bg-[#1e1f22]/70">
+                <label className="text-[9px] font-bold text-[#6d6f78] dark:text-[#949ba4] uppercase tracking-widest mb-2 block">
+                    Export Format
+                </label>
+
+                <select
+                    value={exportFormat}
+                    onChange={(event) =>
+                        onExportFormatChange &&
+                        onExportFormatChange(
+                            event.target.value,
+                        )
+                    }
+                    className="w-full bg-white dark:bg-[#313338] border border-[#d8d9dc] dark:border-[#3f4147] rounded-lg px-3 py-2 text-xs font-bold text-[#4e5058] dark:text-[#dbdee1] focus:outline-none focus:border-[#e5484d] focus:ring-1 focus:ring-[#e5484d]/30 transition-colors"
+                >
+                    <option value="csv">
+                        Generic CSV
+                    </option>
+                    <option value="quickbooks">
+                        QuickBooks (IIF)
+                    </option>
+                    <option value="excel">
+                        Excel (.xls)
+                    </option>
+                    <option value="json">
+                        JSON
+                    </option>
+                </select>
+
+                <button
+                    onClick={onExportAll}
+                    className="w-full mt-3 flex items-center justify-center space-x-2 py-2 border border-[#d8d9dc] dark:border-[#4e5058] rounded-lg text-xs font-bold text-[#4e5058] dark:text-[#b5bac1] hover:text-[#e5484d] hover:border-[#e5484d]/50 hover:bg-[#e5484d]/5 transition-all"
+                >
+                    <Download className="w-3 h-3" />
+                    <span>Export Combined</span>
+                </button>
+
+                <button
+                    onClick={onClearAll}
+                    className="w-full mt-2 flex items-center justify-center space-x-2 py-2 border border-[#e5484d]/30 rounded-lg text-xs font-bold text-[#d13f44] dark:text-[#f77479] hover:bg-[#e5484d]/10 hover:border-[#e5484d]/50 transition-all"
+                >
+                    <AlertTriangle className="w-3 h-3" />
+                    <span>{t.clearData}</span>
+                </button>
+            </div>
+        </div>
+    );
 };
