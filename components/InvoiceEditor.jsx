@@ -40,6 +40,29 @@ const AutoResizeTextarea = ({
 };
 
 /**
+ * Displays contextual information when a status badge is hovered or focused.
+ */
+const BadgeTooltip = ({ children, content }) => {
+    return (
+        <div
+            className="relative group/tooltip w-fit focus:outline-none"
+            tabIndex={0}
+        >
+            {children}
+
+            <div
+                role="tooltip"
+                className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 w-64 -translate-x-1/2 translate-y-1 rounded-lg border border-[#3f4147] bg-[#111214] px-3 py-2.5 text-left text-[11px] font-medium normal-case tracking-normal leading-relaxed text-[#f2f3f5] shadow-2xl opacity-0 transition-all duration-150 group-hover/tooltip:translate-y-0 group-hover/tooltip:opacity-100 group-focus/tooltip:translate-y-0 group-focus/tooltip:opacity-100"
+            >
+                {content}
+
+                <div className="absolute left-1/2 top-full -translate-x-1/2 border-[6px] border-transparent border-t-[#111214]" />
+            </div>
+        </div>
+    );
+};
+
+/**
  * Editable review interface for extracted financial document data.
  *
  * Supports document metadata editing, line-item review, validation warnings,
@@ -273,54 +296,58 @@ export const InvoiceEditor = ({
             <div className="bg-white/70 dark:bg-[#2b2d31] backdrop-blur-sm p-4 rounded-xl border border-[#d8d9dc] dark:border-[#3f4147] shadow-sm transition-colors duration-300">
                 <div className="flex flex-col gap-4 mb-4 border-b border-[#d8d9dc] dark:border-[#3f4147] pb-4">
                     <div className="flex flex-wrap gap-2 items-center">
-                        <div
-                            className={`px-3 py-1.5 rounded-lg border flex items-center space-x-2 w-fit ${badgeStyle.className}`}
-                        >
-                            <BadgeIcon className="w-4 h-4" />
+                        <BadgeTooltip content="The type of document Intake detected.">
+                            <div
+                                className={`px-3 py-1.5 rounded-lg border flex items-center space-x-2 w-fit ${badgeStyle.className}`}
+                            >
+                                <BadgeIcon className="w-4 h-4" />
 
-                            <span className="text-xs font-bold tracking-widest uppercase">
-                                {t.documentType}:{" "}
-                                {data.documentType ||
-                                    "UNKNOWN"}
-                            </span>
-                        </div>
+                                <span className="text-xs font-bold tracking-widest uppercase">
+                                    {t.documentType}:{" "}
+                                    {data.documentType ||
+                                        "UNKNOWN"}
+                                </span>
+                            </div>
+                        </BadgeTooltip>
 
-                        <div
-                            className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide border flex items-center space-x-1.5 ${
+                        <BadgeTooltip
+                            content={
                                 isHighConfidence
-                                    ? "bg-[#10b981]/10 text-[#047857] dark:text-[#6ee7b7] border-[#10b981]/25"
-                                    : "bg-[#f59e0b]/10 text-[#b45309] dark:text-[#fbbf24] border-[#f59e0b]/30"
-                            }`}
-                            title={
-                                isHighConfidence
-                                    ? "High confidence"
-                                    : "Review recommended"
+                                    ? "The extracted data looks accurate."
+                                    : "Some fields may need a quick review."
                             }
                         >
-                            {isHighConfidence ? (
-                                <CheckCircle className="w-3 h-3" />
-                            ) : (
-                                <AlertTriangle className="w-3 h-3" />
-                            )}
+                            <div
+                                className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide border flex items-center space-x-1.5 ${
+                                    isHighConfidence
+                                        ? "bg-[#10b981]/10 text-[#047857] dark:text-[#6ee7b7] border-[#10b981]/25"
+                                        : "bg-[#f59e0b]/10 text-[#b45309] dark:text-[#fbbf24] border-[#f59e0b]/30"
+                                }`}
+                            >
+                                {isHighConfidence ? (
+                                    <CheckCircle className="w-3 h-3" />
+                                ) : (
+                                    <AlertTriangle className="w-3 h-3" />
+                                )}
 
-                            <span>
-                                {isHighConfidence
-                                    ? t.confidenceHigh
-                                    : t.confidenceReview}
-                            </span>
-                        </div>
+                                <span>
+                                    {isHighConfidence
+                                        ? t.confidenceHigh
+                                        : t.confidenceReview}
+                                </span>
+                            </div>
+                        </BadgeTooltip>
 
-                        <div
-                            className="px-3 py-1.5 rounded-lg border flex items-center space-x-2 bg-[#e5484d]/10 border-[#e5484d]/25 text-[#d13f44] dark:text-[#f77479] shadow-sm"
-                            title="Estimated savings vs. manual data entry ($48/hr)"
-                        >
-                            <TrendingUp className="w-4 h-4" />
+                        <BadgeTooltip content="Estimated time and money saved compared to manual data entry.">
+                            <div className="px-3 py-1.5 rounded-lg border flex items-center space-x-2 bg-[#e5484d]/10 border-[#e5484d]/25 text-[#d13f44] dark:text-[#f77479] shadow-sm">
+                                <TrendingUp className="w-4 h-4" />
 
-                            <span className="text-xs font-bold tracking-widest uppercase">
-                                ⏱️ {timeSaved}m / 💰 $
-                                {moneySaved} Saved
-                            </span>
-                        </div>
+                                <span className="text-xs font-bold tracking-widest uppercase">
+                                    ⏱️ {timeSaved}m / 💰 $
+                                    {moneySaved} Saved
+                                </span>
+                            </div>
+                        </BadgeTooltip>
                     </div>
 
                     <div className="flex flex-wrap gap-2">
