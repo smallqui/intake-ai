@@ -2,11 +2,11 @@
 
 **AI-powered document intake for extracting, validating, and structuring financial data.**
 
-Intake AI transforms photos and PDFs of receipts, invoices, and other financial documents into structured, editable data that can be reviewed and exported for spreadsheets, accounting workflows, databases, and other systems.
+Intake AI turns photos and PDFs of receipts, invoices, and other financial documents into structured, editable data that's ready to review and export into spreadsheets, accounting workflows, or databases.
 
 [Live Demo](https://intake.stevenmallqui.com) · [Portfolio](https://stevenmallqui.com)
 
-> Originally built during **HawkHack 2025 at Montclair State University** and later expanded into a more complete document-processing application.
+> Originally built during **HawkHack 2025 at Montclair State University**, then expanded into a more complete document-processing app.
 
 <p align="center">
   <img src="./public/readme/home.png" alt="Intake AI home page" width="900" />
@@ -22,48 +22,33 @@ Intake AI takes an unstructured financial document and turns it into structured,
 
 ## Overview
 
-Manual data entry from receipts and invoices is repetitive, time-consuming, and prone to mistakes. Intake AI was built to explore a faster and more practical workflow.
+Manually entering data from receipts and invoices is repetitive, slow, and error-prone. Intake AI explores a faster way to do it.
 
-Users can upload an image or PDF, and Intake AI uses Google's Gemini API to identify and extract information such as:
+Users upload an image or PDF, and the app uses Google's Gemini API to pull out fields like:
 
-- Document type
-- Vendor
-- Invoice date
-- Currency
-- Total amount
-- SKUs
-- Item descriptions
-- Quantities
-- Unit prices
-- Line totals
+- Document type, vendor, invoice date, currency, total amount
+- SKUs, item descriptions, quantities, unit prices, line totals
 - GL categories
 
-The extracted information is presented in an editable interface so users can review the results before exporting them as **CSV, Excel-compatible XLS, JSON, or QuickBooks-compatible CSV data**.
+The extracted data lands in an editable interface so users can check it over before exporting as **CSV, Excel-compatible XLS, JSON, or QuickBooks-compatible CSV**.
 
-The goal of the project is not simply to read text from a document, but to turn unstructured financial documents into structured data that can fit into real business workflows.
+The goal isn't just reading text off a document — it's turning that unstructured document into structured data that actually fits into a real workflow.
 
 ## Features
 
-- Image and PDF document processing
-- AI-powered financial data extraction using Google Gemini
-- Structured document and line-item extraction
+- Image and PDF document processing, including multi-document batches
+- AI-powered extraction using Google Gemini
+- Structured document and line-item output
 - Editable results before export
 - Automatic GL category suggestions
 - Math mismatch detection and recalculation
 - Duplicate document detection
-- Multi-document batch processing
-- CSV export
-- Excel-compatible `.xls` export
-- JSON export
-- QuickBooks-compatible CSV export
+- CSV, Excel-compatible (`.xls`), JSON, and QuickBooks-compatible exports
 - Print / Save as PDF
 - Currency conversion previews
-- Session history
-- Session analytics
-- Spending and document breakdowns
-- Multi-language interface
-- Light and dark themes
-- Demo mode for testing without API usage
+- Session history and analytics (spending breakdowns, categories, document types)
+- Multi-language interface, light/dark themes
+- Demo mode for trying it without burning API usage
 
 ## How It Works
 
@@ -81,34 +66,28 @@ Validation & Review
 CSV / Excel / QuickBooks / JSON
 ```
 
-1. The user uploads an image or PDF containing financial information.
-2. The document is sent to a server-side Next.js API route.
-3. Google's Gemini API analyzes the document and returns structured data using a defined response schema.
-4. Intake AI applies additional application logic for validation, duplicate detection, calculations, and formatting.
-5. The extracted data is displayed in an editable interface for review.
-6. The final data can be exported for use in spreadsheets, accounting workflows, databases, or other systems.
+1. User uploads an image or PDF of a financial document.
+2. It's sent to a server-side Next.js API route.
+3. Gemini analyzes the document and returns structured data against a defined response schema.
+4. The app layers on additional logic — validation, duplicate detection, calculations, formatting.
+5. The extracted data is shown in an editable interface for review.
+6. The final data exports for spreadsheets, accounting workflows, databases, or wherever it's needed.
 
 ## Screenshots
 
-### Upload
-
-Users can upload receipts, invoices, and other financial documents as images or PDFs. Batch processing is also supported.
+**Upload** — receipts, invoices, and other financial documents as images or PDFs, with batch support.
 
 <p align="center">
   <img src="./public/readme/upload.png" alt="Intake AI upload interface" width="900" />
 </p>
 
-### Extraction & Review
-
-Extracted data is presented in an editable interface so users can verify fields, review line items, and correct information before export.
+**Extraction & Review** — verify fields, review line items, and fix anything before export.
 
 <p align="center">
   <img src="./public/readme/editor.png" alt="Intake AI extracted document editor" width="900" />
 </p>
 
-### History & Analytics
-
-Processed documents remain available during the browser session, with lightweight analytics for totals, categories, currencies, document types, and recent activity.
+**History & Analytics** — processed documents stay available for the session, with lightweight analytics on totals, categories, currencies, and recent activity.
 
 <p align="center">
   <img src="./public/readme/analytics.png" alt="Intake AI history and analytics interface" width="900" />
@@ -116,162 +95,95 @@ Processed documents remain available during the browser session, with lightweigh
 
 ## Tech Stack
 
-- **JavaScript / JSX**
-- **Next.js**
-- **React**
-- **Tailwind CSS**
-- **Google Gemini API**
-- **Vercel**
+`JavaScript / JSX` · `Next.js` · `React` · `Tailwind CSS` · `Google Gemini API` · `Vercel`
 
-The application also uses browser APIs for file handling, clipboard functionality, printing, and client-side export generation.
+Also leans on browser APIs for file handling, clipboard support, printing, and client-side export generation.
 
 ## AI Integration
 
-Intake AI was my first project where a generative AI model became part of the application's actual data-processing workflow.
+This was the first project where a generative AI model became part of the actual data pipeline rather than a chatbot bolted on the side.
 
-Instead of using Gemini as a chatbot, the application sends uploaded financial documents to the Gemini API and requests structured output that the rest of the application can work with.
+Instead of treating Gemini as a conversational layer, the app sends it documents and asks for structured output that the rest of the system can act on directly. Gemini handles the probabilistic part — reading and understanding the document — while ordinary application logic handles the deterministic part: validation, duplicate detection, math checks, recalculation, workflow state, risk flags, and export generation.
 
-The AI handles probabilistic document understanding and extraction, while traditional application logic handles tasks such as:
-
-- Data validation
-- Duplicate detection
-- Mathematical checks
-- Recalculation
-- Workflow state
-- Risk indicators
-- Export generation
-
-This project gave me hands-on experience with multimodal AI, structured model responses, API integration, prompt design, and building software around output that may still require human review.
+Building this gave me real hands-on experience with multimodal AI, structured/schema-constrained model output, prompt design, and designing interfaces around AI output that's usually good but still needs a human check.
 
 ## Project Origin
 
-Intake AI was originally created during **HawkHack 2025 at Montclair State University**.
+Intake AI started at **HawkHack 2025 at Montclair State University**. I wanted to build something rooted in data and databases while solving an actually annoying problem — the repetitive grind of manually transferring numbers from receipts and invoices into spreadsheets and accounting tools.
 
-I wanted to build something centered around data analysis and databases while solving a practical workflow problem. I focused on the repetitive process of manually transferring information from receipts and invoices into spreadsheets and accounting systems.
-
-The hackathon gave me an opportunity to experiment with using AI to bridge the gap between unstructured documents and structured data.
-
-After HawkHack, I continued developing the project by improving the interface, validation workflow, export options, analytics, localization, and overall user experience.
+The hackathon was a good excuse to experiment with using AI to bridge unstructured documents and structured data. After the event, I kept building — improving the interface, validation flow, export options, analytics, and localization.
 
 ## What I Learned
 
-This was my first project integrating generative AI directly into an application's computational workflow.
+- Integrating Google's Gemini API and working with multimodal inputs
+- Designing structured, schema-constrained AI responses
+- Keeping AI-generated output cleanly separated from deterministic app logic
+- Handling API errors and usage limits gracefully
+- Building editable UI around AI-generated data
+- Generating CSV, Excel-compatible, and JSON exports
+- Managing multi-step processing state in React
+- Building responsive UI with React and Tailwind, including light/dark themes
 
-Through Intake AI, I gained hands-on experience with:
-
-- Integrating Google's Gemini API
-- Working with multimodal AI models
-- Processing image and PDF inputs
-- Designing structured AI responses
-- Working with schema-constrained model output
-- Separating AI-generated output from deterministic application logic
-- Handling API errors and usage limits
-- Building editable interfaces around AI-generated data
-- Generating CSV, Excel-compatible, and JSON files
-- Managing multi-step processing states in React
-- Building responsive interfaces with React and Tailwind CSS
-- Designing light and dark UI themes
-
-The project also introduced frontend techniques and application patterns that I plan to reuse in future projects.
+A lot of the frontend patterns from this project are ones I plan to reuse going forward.
 
 ## Practical Use Cases
 
-Intake AI explores how document-processing tools can reduce repetitive manual data-entry work in areas such as:
-
-- Accounts payable
-- Bookkeeping
-- Invoice processing
-- Expense management
-- Procurement
-- Financial reconciliation
-- Spreadsheet preparation
-- Database entry
-- Document digitization
-- Internal business tooling
+Accounts payable, bookkeeping, invoice processing, expense management, procurement, financial reconciliation, spreadsheet prep, database entry, document digitization, and general internal business tooling.
 
 ```text
-Traditional Workflow
+Traditional Workflow                 Intake AI Workflow
 
-Receipt / Invoice
-       ↓
-Manual Data Entry
-       ↓
-Spreadsheet / Accounting System
-
-
-Intake AI Workflow
-
-Receipt / Invoice
-       ↓
-Intake AI
-       ↓
-Review Structured Data
-       ↓
-CSV / Excel / QuickBooks / JSON
+Receipt / Invoice                    Receipt / Invoice
+       ↓                                    ↓
+Manual Data Entry                     Intake AI
+       ↓                                    ↓
+Spreadsheet / Accounting System       Review Structured Data
+                                             ↓
+                                      CSV / Excel / QuickBooks / JSON
 ```
 
 ## Running Locally
 
-Clone the repository:
-
 ```bash
 git clone https://github.com/smallqui/intake-ai.git
 cd intake-ai
-```
-
-Install dependencies:
-
-```bash
 npm install
-```
-
-Create a local environment file:
-
-```bash
 cp .env.example .env.local
 ```
 
-Add your Gemini API key:
+Add your Gemini API key to `.env.local`:
 
 ```env
 GEMINI_API_KEY=your_key_here
 ```
 
-Start the development server:
+Start the dev server:
 
 ```bash
 npm run dev
 ```
 
-Then open:
-
-```text
-http://localhost:3000
-```
+Then open `http://localhost:3000`.
 
 ## Limitations
 
-- AI-generated data may contain errors and should be reviewed before being used in financial systems.
-- Currency conversion currently uses static approximate exchange rates rather than a live exchange-rate service.
-- Sensitive-data detection uses lightweight pattern matching and should not be treated as a comprehensive security or compliance system.
-- Document history is session-based rather than stored in a persistent database.
-- QuickBooks export currently generates compatible CSV data rather than a native QuickBooks IIF file.
+- AI-generated data can contain errors and should be reviewed before use in real financial systems
+- Currency conversion uses static approximate rates, not a live exchange-rate feed
+- Sensitive-data detection is lightweight pattern matching, not a compliance-grade solution
+- Document history is session-based, not persisted to a database
+- QuickBooks export produces compatible CSV data rather than a native IIF file
 
 ## Future Improvements
 
-- Persistent document storage
-- Database integration
+- Persistent storage and database integration
 - User accounts
 - Live currency exchange rates
 - Additional accounting-platform exports
-- More advanced document validation
-- Improved confidence scoring
-- Larger batch-processing workflows
-- Expanded analytics
-- Additional document types
+- More advanced document validation and confidence scoring
+- Larger batch-processing workflows and expanded analytics
+- Support for more document types
 
 ## Author
 
 **Steven Mallqui**
-
 [Portfolio](https://stevenmallqui.com) · [GitHub](https://github.com/smallqui)
